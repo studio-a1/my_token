@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DApp de Pré-venda de Tokens Web3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: #020617; /* slate-950 */
+    }
+
+    @keyframes aurora-animation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .aurora-background {
+      background: radial-gradient(ellipse at top, #1e293b, #020617),
+                  radial-gradient(ellipse at bottom, #111827, #020617);
+      background-size: 200% 200%;
+      animation: aurora-animation 15s ease infinite;
+    }
+    
+    .aurora-border {
+      position: relative;
+      background: #1e293b; /* slate-800 */
+      border-radius: 1rem; /* rounded-2xl */
+    }
+
+    .aurora-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 1rem;
+      background: linear-gradient(120deg, #4f46e5, #06b6d4);
+      z-index: -1;
+    }
+
+     .aurora-border-lg {
+      position: relative;
+      background: #0f172a; /* slate-900 */
+      border-radius: 0.5rem; /* rounded-lg */
+    }
+
+    .aurora-border-lg::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 0.5rem;
+      background: linear-gradient(120deg, #4338ca, #0e7490);
+      z-index: -1;
+    }
+
+    @keyframes slide-in-right {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    
+    .creator-panel {
+      animation: slide-in-right 0.3s ease-out forwards;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^18.3.1/",
+    "react": "https://esm.sh/react@^18.3.1",
+    "react-dom/": "https://esm.sh/react-dom@^18.3.1/",
+    "react-dom/client": "https://esm.sh/react-dom@^18.3.1/client",
+    "date-fns/": "https://esm.sh/date-fns@^3.6.0/",
+    "date-fns": "https://esm.sh/date-fns@^3.6.0"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="root"></div>
+  <!-- O Vite irá injetar o script do seu aplicativo aqui -->
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

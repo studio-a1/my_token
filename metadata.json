@@ -1,0 +1,5 @@
+{
+  "name": " Pré-venda de Tokens Web3-MockAPI",
+  "description": "Uma interface para participar de pré-vendas de tokens, com um 'Modo Criador' que permite simular e visualizar seu próprio lançamento de token em tempo real.",
+  "requestFramePermissions": []
+}
