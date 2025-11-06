@@ -70,20 +70,18 @@
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^18.3.1/",
-    "react": "https://esm.sh/react@^18.3.1",
-    "react-dom/": "https://esm.sh/react-dom@^18.3.1/",
-    "date-fns/": "https://esm.sh/date-fns@^3.6.0/",
-    "date-fns": "https://esm.sh/date-fns@^3.6.0"
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "date-fns/": "https://aistudiocdn.com/date-fns@^4.1.0/",
+    "date-fns": "https://aistudiocdn.com/date-fns@^4.1.0"
   }
 }
 </script>
-<!-- Adicionado Babel para transpilar TSX em tempo real no navegador -->
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
   <div id="root"></div>
-  <!-- O tipo foi alterado para 'text/babel' para que o Babel possa processá-lo -->
-  <script type="text/babel" data-type="module" src="./index.tsx"></script>
+  <!-- Padrão Vite: aponta para o entrypoint dentro de /src -->
+  <script type="module" src="index.tsx"></script>
 </body>
 </html>

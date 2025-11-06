@@ -1,6 +1,6 @@
 import React from 'react';
-import { UserData } from '../types';
-import { CheckCircleIcon, XCircleIcon } from './icons';
+import { UserData } from '../types.ts';
+import { CheckCircleIcon, XCircleIcon } from './icons.tsx';
 
 interface UserInfoProps {
     data: UserData;

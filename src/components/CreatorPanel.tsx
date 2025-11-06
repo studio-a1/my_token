@@ -1,6 +1,6 @@
 import React from 'react';
-import { PresaleData, SaleStatus } from '../types';
-import { CloseIcon } from './icons';
+import { PresaleData, SaleStatus } from '../types.ts';
+import { CloseIcon } from './icons.tsx';
 
 interface CreatorPanelProps {
     config: PresaleData;
@@ -8,11 +8,7 @@ interface CreatorPanelProps {
     onClose: () => void;
 }
 
-interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
-    label: string;
-}
-
-const InputField: React.FC<InputFieldProps> = ({ label, ...props }) => (
+const InputField = ({ label, ...props }) => (
     <div>
         <label className="block text-sm font-medium text-slate-300 mb-1">{label}</label>
         <input 
@@ -25,11 +21,8 @@ const InputField: React.FC<InputFieldProps> = ({ label, ...props }) => (
 export const CreatorPanel: React.FC<CreatorPanelProps> = ({ config, onConfigChange, onClose }) => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        // Use getAttribute para verificar o tipo, pois a propriedade `type` pode ser diferente.
-        const type = e.target.getAttribute('type'); 
+        const { name, value, type } = e.target;
         let processedValue: any = value;
-
         if (type === 'number') {
             processedValue = value === '' ? '' : parseFloat(value);
         }
@@ -41,9 +34,6 @@ export const CreatorPanel: React.FC<CreatorPanelProps> = ({ config, onConfigChan
 
     // Helper to format date for datetime-local input
     const formatDateForInput = (date: Date) => {
-        if (!(date instanceof Date) || isNaN(date.getTime())) {
-            return ''; // Retorna string vazia se a data for inválida
-        }
         const d = new Date(date);
         const year = d.getFullYear();
         const month = (`0${d.getMonth() + 1}`).slice(-2);
