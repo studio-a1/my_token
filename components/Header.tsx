@@ -1,5 +1,5 @@
 import React from 'react';
-import { WalletIcon, SettingsIcon } from './icons';
+import { WalletIcon, SettingsIcon } from './icons.tsx';
 
 interface HeaderProps {
     walletAddress: string | null;

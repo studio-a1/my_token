@@ -78,10 +78,12 @@
   }
 }
 </script>
+<!-- Adicionado Babel para transpilar TSX em tempo real no navegador -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
   <div id="root"></div>
-  <!-- O Vite irá injetar o script do seu aplicativo aqui -->
-  <script type="module" src="./index.tsx"></script>
+  <!-- O tipo foi alterado para 'text/babel' para que o Babel possa processá-lo -->
+  <script type="text/babel" data-type="module" src="./index.tsx"></script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Header } from './components/Header';
-import { PresaleCard } from './components/PresaleCard';
-import { UserInfo } from './components/UserInfo';
-import { Modal } from './components/Modal';
-import { CreatorPanel } from './components/CreatorPanel';
-import { TransactionStatus, PresaleData, UserData } from './types';
-import { fetchPresaleData, connectWallet, fetchUserData, buyTokens, updatePresaleData } from './services/mockApiService';
-import { SuccessIcon, PendingIcon, ErrorIcon } from './components/icons';
+import { Header } from './components/Header.tsx';
+import { PresaleCard } from './components/PresaleCard.tsx';
+import { UserInfo } from './components/UserInfo.tsx';
+import { Modal } from './components/Modal.tsx';
+import { CreatorPanel } from './components/CreatorPanel.tsx';
+import { TransactionStatus, PresaleData, UserData } from './types.ts';
+import { fetchPresaleData, connectWallet, fetchUserData, buyTokens, updatePresaleData } from './services/mockApiService.ts';
+import { SuccessIcon, PendingIcon, ErrorIcon } from './components/icons.tsx';
 
 const App: React.FC = () => {
     const [presaleData, setPresaleData] = useState<PresaleData | null>(null);
