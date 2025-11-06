@@ -1,149 +1,132 @@
-import React, { useState, useEffect } from 'react';
-import { PresaleData, SaleStatus } from '../types';
-import { formatDistanceToNowStrict } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { SaleStatus, PresaleData, UserData } from '../types.ts';
 
-interface PresaleCardProps {
-    data: PresaleData;
-    onBuy: (amount: number) => void;
-    isConnected: boolean;
-    onConnectRequest: () => void;
-}
+// --- Mock Database ---
+// Simula um banco de dados simples em memória para o estado da pré-venda e os dados do usuário.
+// Em um aplicativo real, isso seria substituído por chamadas para um contrato inteligente ou um backend.
+let mockPresaleData: PresaleData = {
+    tokenName: 'Aurora',
+    tokenSymbol: 'AUR',
+    status: SaleStatus.LIVE,
+    tokensSold: 65_000_000,
+    totalTokens: 100_000_000,
+    tokenPrice: 0.005, // ETH
+    saleEndTime: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3), // 3 dias a partir de agora
+    minPurchase: 0.1,
+    maxPurchase: 5
+};
 
-export const PresaleCard: React.FC<PresaleCardProps> = ({ data, onBuy, isConnected, onConnectRequest }) => {
-    const [amount, setAmount] = useState<string>('');
-    const [timeLeft, setTimeLeft] = useState<string>('');
-    
-    // --- FIX: Ensure calculations are robust against non-numeric or zero values from the Creator Panel ---
-    const numericSold = Number(data.tokensSold) || 0;
-    const numericTotal = Number(data.totalTokens) || 0;
-    const numericTokenPrice = Number(data.tokenPrice) || 0;
-    const numericMinPurchase = Number(data.minPurchase) || 0;
-    const numericMaxPurchase = Number(data.maxPurchase) || 0;
+// Armazena os dados dos usuários que se conectam, usando o endereço da carteira como chave.
+const mockUserDatabase: { [address: string]: UserData } = {};
+// ---------------------
 
-    const progress = numericTotal > 0 ? (numericSold / numericTotal) * 100 : 0;
+// Simula a latência da rede para tornar a experiência mais realista.
+const SIMULATED_DELAY = 800; // ms
 
-    const numericAmount = parseFloat(amount);
-    const tokensToReceive = (numericTokenPrice > 0 && !isNaN(numericAmount) && numericAmount > 0)
-        ? (numericAmount / numericTokenPrice)
-        : 0;
-        
-    const isBuyButtonDisabled = 
-        !amount || 
-        data.status !== SaleStatus.LIVE || 
-        isNaN(numericAmount) || 
-        numericAmount < numericMinPurchase || 
-        numericAmount > numericMaxPurchase;
-    // --- END FIX ---
+/**
+ * Simula a busca dos dados principais da pré-venda.
+ * Também verifica se o tempo de venda expirou para atualizar o status.
+ */
+export const fetchPresaleData = (): Promise<PresaleData> => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            // Lógica para simular o fim da venda com base no tempo atual.
+            if (mockPresaleData.saleEndTime.getTime() < Date.now()) {
+                mockPresaleData.status = SaleStatus.ENDED;
+            }
+            // Retorna uma cópia dos dados para evitar mutações diretas do estado.
+            resolve({ ...mockPresaleData });
+        }, SIMULATED_DELAY);
+    });
+};
 
-    useEffect(() => {
-        if (data.status === SaleStatus.LIVE && data.saleEndTime > new Date()) {
-            const interval = setInterval(() => {
-                const distance = formatDistanceToNowStrict(data.saleEndTime, { locale: ptBR, addSuffix: true });
-                setTimeLeft(`Termina ${distance}`);
-            }, 1000);
-            return () => clearInterval(interval);
-        } else if (data.status === SaleStatus.ENDED || data.saleEndTime <= new Date()) {
-            setTimeLeft('Venda finalizada');
-        } else {
-            setTimeLeft('Venda em breve');
-        }
-    }, [data.saleEndTime, data.status]);
+/**
+ * Permite que o 'Modo Criador' atualize o estado da simulação no "backend".
+ * Isso possibilita a visualização em tempo real das alterações de configuração.
+ */
+export const updatePresaleData = (newConfig: PresaleData): Promise<PresaleData> => {
+    return new Promise(resolve => {
+        mockPresaleData = { ...mockPresaleData, ...newConfig };
+        resolve({ ...mockPresaleData });
+    });
+};
 
+/**
+ * Simula o processo de conexão com a carteira de um usuário, gerando um endereço aleatório.
+ */
+export const connectWallet = (): Promise<string> => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            const mockAddress = `0x${[...Array(40)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+            resolve(mockAddress);
+        }, SIMULATED_DELAY / 2);
+    });
+};
 
-    const handleBuy = () => {
-        if (!isNaN(numericAmount) && numericAmount > 0) {
-            onBuy(numericAmount);
-        }
-    };
+/**
+ * Simula a busca de dados de um usuário específico.
+ * Se o usuário não existir no nosso "banco de dados", um novo perfil é criado na hora.
+ */
+export const fetchUserData = (address: string): Promise<UserData> => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            // Cria um novo usuário com dados aleatórios se for a primeira vez que se conecta.
+            if (!mockUserDatabase[address]) {
+                mockUserDatabase[address] = {
+                    address: address,
+                    isWhitelisted: Math.random() > 0.2, // 80% de chance de estar na whitelist
+                    contribution: 0,
+                    tokensOwed: 0,
+                };
+            }
+            // Retorna uma cópia dos dados do usuário.
+            resolve({ ...mockUserDatabase[address] });
+        }, SIMULATED_DELAY);
+    });
+};
 
-    const getStatusBadgeColor = () => {
-        switch (data.status) {
-            case SaleStatus.LIVE: return 'bg-green-500/20 text-green-400 border-green-500/30';
-            case SaleStatus.ENDED: return 'bg-red-500/20 text-red-400 border-red-500/30';
-            case SaleStatus.UPCOMING: return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-            default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
-        }
-    };
+/**
+ * Simula a lógica de compra de tokens, incluindo várias validações.
+ */
+export const buyTokens = (address: string, amount: number): Promise<{ success: boolean }> => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const user = mockUserDatabase[address];
 
-    return (
-        <div className="aurora-border p-8 backdrop-blur-lg shadow-2xl shadow-indigo-900/20 transition-transform duration-300 hover:-translate-y-1">
-            <div className="flex justify-between items-start mb-6">
-                <h2 className="text-3xl font-bold text-slate-100">Participe da Pré-venda</h2>
-                <span className={`px-3 py-1 text-sm font-semibold rounded-full border ${getStatusBadgeColor()}`}>
-                    {data.status}
-                </span>
-            </div>
+            // --- Validações ---
+            if (!user) {
+                return reject(new Error("Usuário não encontrado. Conecte a carteira primeiro."));
+            }
+            if (!user.isWhitelisted) {
+                return reject(new Error("Seu endereço não está na whitelist para esta pré-venda."));
+            }
+            if (mockPresaleData.status !== SaleStatus.LIVE) {
+                return reject(new Error("A pré-venda não está ativa."));
+            }
+            if (amount < mockPresaleData.minPurchase) {
+                return reject(new Error(`A compra mínima é de ${mockPresaleData.minPurchase} ETH.`));
+            }
+            if ((user.contribution + amount) > mockPresaleData.maxPurchase) {
+                 return reject(new Error(`Sua contribuição total não pode exceder ${mockPresaleData.maxPurchase} ETH.`));
+            }
+            
+            const tokensBought = amount / mockPresaleData.tokenPrice;
+            if ((mockPresaleData.tokensSold + tokensBought) > mockPresaleData.totalTokens) {
+                 return reject(new Error("Não há tokens suficientes para completar esta compra."));
+            }
 
-            <div className="mb-6">
-                <div className="flex justify-between text-sm text-slate-400 mb-2">
-                    <span>Progresso</span>
-                    <span>{progress.toFixed(2)}%</span>
-                </div>
-                <div className="w-full bg-slate-700/50 rounded-full h-3">
-                    <div 
-                        className="bg-gradient-to-r from-indigo-500 to-cyan-400 h-3 rounded-full transition-all duration-500 ease-out" 
-                        style={{ 
-                            width: `${progress}%`,
-                            boxShadow: '0 0 10px #4f46e5, 0 0 5px #06b6d4'
-                        }}
-                    ></div>
-                </div>
-                <div className="flex justify-between text-sm text-slate-300 mt-2">
-                    <span>{numericSold.toLocaleString()} / {numericTotal.toLocaleString()} {data.tokenSymbol}</span>
-                    <span className="text-yellow-400">{timeLeft}</span>
-                </div>
-            </div>
+            // --- Atualização de Estado (se todas as validações passarem) ---
+            // Atualiza os dados do usuário.
+            user.contribution += amount;
+            user.tokensOwed += tokensBought;
+            
+            // Atualiza os dados da pré-venda de forma imutável para garantir consistência.
+            mockPresaleData = {
+                ...mockPresaleData,
+                tokensSold: mockPresaleData.tokensSold + tokensBought
+            };
 
-            <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
-                        <p className="text-sm text-slate-400">Preço do Token</p>
-                        <p className="text-lg font-semibold text-slate-100">{numericTokenPrice} ETH</p>
-                    </div>
-                    <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
-                        <p className="text-sm text-slate-400">Compra Mínima</p>
-                        <p className="text-lg font-semibold text-slate-100">{numericMinPurchase} ETH</p>
-                    </div>
-                </div>
+            resolve({ success: true });
 
-                <div className="relative">
-                    <label htmlFor="amount" className="block text-sm font-medium text-slate-300 mb-1">Valor em ETH</label>
-                    <input
-                        type="number"
-                        id="amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.1"
-                        min={numericMinPurchase}
-                        max={numericMaxPurchase}
-                        disabled={!isConnected || data.status !== SaleStatus.LIVE}
-                        className="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition disabled:bg-slate-800 disabled:cursor-not-allowed"
-                    />
-                </div>
-                <div className="text-center bg-slate-900/70 p-3 rounded-lg border border-slate-700">
-                    <p className="text-slate-400">Você receberá (aprox.)</p>
-                    <p className="text-2xl font-bold text-cyan-400">{tokensToReceive.toLocaleString(undefined, { maximumFractionDigits: 2 })} {data.tokenSymbol}</p>
-                </div>
-                
-                {isConnected ? (
-                    <button
-                        onClick={handleBuy}
-                        disabled={isBuyButtonDisabled}
-                        className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-bold py-3 px-4 rounded-lg hover:scale-105 transition-transform duration-300 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed disabled:text-slate-400 disabled:scale-100 shadow-lg shadow-indigo-500/20"
-                    >
-                        Comprar Tokens
-                    </button>
-                ) : (
-                    <button
-                        onClick={onConnectRequest}
-                        className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-bold py-3 px-4 rounded-lg hover:scale-105 transition-transform duration-300 shadow-lg shadow-indigo-500/20"
-                    >
-                        Conectar Carteira para Comprar
-                    </button>
-                )}
-
-            </div>
-        </div>
-    );
+        }, SIMULATED_DELAY * 2);
+    });
 };

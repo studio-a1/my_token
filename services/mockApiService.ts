@@ -1,4 +1,4 @@
-import { SaleStatus, PresaleData, UserData } from '../types';
+import { SaleStatus, PresaleData, UserData } from '../types.ts';
 
 // --- Mock Database ---
 // Simula um banco de dados simples em memória para o estado da pré-venda e os dados do usuário.
