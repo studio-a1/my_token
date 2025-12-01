@@ -18,5 +18,18 @@
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
-  }
+  },
+  "description": "💠 My Token Launchpad Mockup Interface interativa para simulação de pré-vendas de tokens e criação de lançamentos fictícios em tempo real!!",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/studio-a1/my_token.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/studio-a1/my_token/issues"
+  },
+  "homepage": "https://github.com/studio-a1/my_token#readme"
 }
