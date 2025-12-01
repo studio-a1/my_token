@@ -19,7 +19,7 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   },
-  "description": "💠 My Token Launchpad Mockup Interface interativa para simulação de pré-vendas de tokens e criação de lançamentos fictícios em tempo real!!",
+  "description": "💠 My Token Launchpad Mockup Interface interativa para simulação de pré-vendas de tokens e criação de lançamentos fictícios em tempo real!",
   "main": "index.js",
   "repository": {
     "type": "git",
